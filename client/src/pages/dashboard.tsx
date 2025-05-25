@@ -12,7 +12,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Company, Holiday, DataRequest, Comment } from "@shared/schema";
-import { Menu, Bell, User, Database, Calendar, Clock, Plus, Download, Loader2 } from "lucide-react";
+import { Menu, Bell, User, Database, Calendar, Clock, Plus, Download, Loader2, LogOut } from "lucide-react";
 import { format } from "date-fns";
 
 type Section = 
@@ -663,6 +663,22 @@ export default function Dashboard() {
               <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                 <User className="h-5 w-5 text-gray-600" />
               </div>
+              
+              {/* Logout Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
+                className="flex items-center space-x-2"
+              >
+                {logoutMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogOut className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
             </div>
           </div>
         </div>
