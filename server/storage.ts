@@ -179,6 +179,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getCompaniesByCategory(category: string, userId?: number): Promise<Company[]> {
+    let whereCondition = eq(comments.category, category);
+    
+    if (userId) {
+      whereCondition = and(eq(comments.category, category), eq(companies.assignedToUserId, userId));
+    }
+
     const query = db
       .select({
         id: companies.id,
@@ -197,13 +203,10 @@ export class DatabaseStorage implements IStorage {
       })
       .from(companies)
       .innerJoin(comments, eq(companies.id, comments.companyId))
-      .where(eq(comments.category, category));
+      .where(whereCondition)
+      .orderBy(desc(companies.updatedAt));
 
-    if (userId) {
-      query.where(and(eq(comments.category, category), eq(companies.assignedToUserId, userId)));
-    }
-
-    return await query.orderBy(desc(companies.updatedAt));
+    return await query;
   }
 
   // Comment management

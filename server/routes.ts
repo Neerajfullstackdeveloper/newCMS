@@ -345,6 +345,27 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  app.post("/api/admin/users", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    // Only admins can create users
+    if (!["tl", "manager", "admin"].includes(req.user!.role)) {
+      return res.sendStatus(403);
+    }
+    
+    try {
+      const userData = req.body;
+      // Hash password before storing
+      const { hashPassword } = require("./auth");
+      userData.password = await hashPassword(userData.password);
+      
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create user" });
+    }
+  });
+
   app.put("/api/admin/users/:id", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
@@ -356,6 +377,13 @@ export function registerRoutes(app: Express): Server {
     try {
       const { id } = req.params;
       const updates = req.body;
+      
+      // Hash password if it's being updated
+      if (updates.password) {
+        const { hashPassword } = require("./auth");
+        updates.password = await hashPassword(updates.password);
+      }
+      
       const user = await storage.updateUser(parseInt(id), updates);
       
       if (!user) {
@@ -382,6 +410,44 @@ export function registerRoutes(app: Express): Server {
       res.sendStatus(200);
     } catch (error) {
       res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Admin company management
+  app.post("/api/admin/companies", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    // Only admins can add companies for any user
+    if (!["tl", "manager", "admin"].includes(req.user!.role)) {
+      return res.sendStatus(403);
+    }
+    
+    try {
+      const validatedData = insertCompanySchema.parse(req.body);
+      const company = await storage.createCompany({
+        ...validatedData,
+        assignedToUserId: req.body.assignedToUserId || null,
+      });
+      res.status(201).json(company);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid company data" });
+    }
+  });
+
+  app.delete("/api/admin/companies/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    // Only admins can delete any company
+    if (!["tl", "manager", "admin"].includes(req.user!.role)) {
+      return res.sendStatus(403);
+    }
+    
+    try {
+      const { id } = req.params;
+      await storage.deleteCompany(parseInt(id));
+      res.sendStatus(200);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete company" });
     }
   });
 
