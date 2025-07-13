@@ -68,18 +68,18 @@ export function Sidebar({
       icon: Calendar,
       color: "text-gray-600",
     },
-    {
-      id: "facebookData" as Section,
-      label: "Facebook Data",
-      icon: Facebook,
-      color: "text-gray-600",
-    },
-    {
-      id: "facebookRequest" as Section,
-      label: "Facebook Data Request",
-      icon: Send,
-      color: "text-gray-600",
-    },
+    // {
+    //   id: "facebookData" as Section,
+    //   label: "Facebook Data",
+    //   icon: Facebook,
+    //   color: "text-gray-600",
+    // },
+    // {
+    //   id: "facebookRequest" as Section,
+    //   label: "Facebook Data Request",
+    //   icon: Send,
+    //   color: "text-gray-600",
+    // },
     {
       id: "followUp" as Section,
       label: "Follow-Up",
