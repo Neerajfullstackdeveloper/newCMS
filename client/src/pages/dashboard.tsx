@@ -39,40 +39,46 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
 
   // Queries
-  const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
-    queryKey: ["/api/companies"],
-  });
+ const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
+  queryKey: ["/api/companies"],
+});
 
-  const { data: myCompanies = [], isLoading: isLoadingMyCompanies } = useQuery<Company[]>({
-    queryKey: ["/api/companies/my"],
-  });
-  
-  const { data: followUpCompanies = [], isLoading: isLoadingFollowUp } = useQuery<Company[]>({
-    queryKey: ["/api/companies/category/followup"],
-  });
+const { data: myCompanies = [], isLoading: isLoadingMyCompanies } = useQuery<Company[]>({
+  queryKey: ["/api/companies/my"],
+  enabled: !isLoadingAllCompanies,
+});
 
-  const { data: hotCompanies = [], isLoading: isLoadingHot } = useQuery<Company[]>({
-    queryKey: ["/api/companies/category/hot"],
-  });
+const { data: holidays = [], isLoading: isLoadingHolidays } = useQuery<Holiday[]>({
+  queryKey: ["/api/holidays"],
+  enabled: !isLoadingAllCompanies,
+});
 
-  const { data: blockCompanies = [], isLoading: isLoadingBlock } = useQuery<Company[]>({
-    queryKey: ["/api/companies/category/block"],
-  });
+// 2. Delay category-based queries until both above are loaded
+const { data: followUpCompanies = [], isLoading: isLoadingFollowUp } = useQuery<Company[]>({
+  queryKey: ["/api/companies/category/followup"],
+  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+});
 
-  const { data: holidays = [], isLoading: isLoadingHolidays } = useQuery<Holiday[]>({
-    queryKey: ["/api/holidays"],
-  });
+const { data: hotCompanies = [], isLoading: isLoadingHot } = useQuery<Company[]>({
+  queryKey: ["/api/companies/category/hot"],
+  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+});
 
-  const { data: todayCompanies = [], isLoading: isLoadingTodayCompanies } = useQuery<Company[]>({
-    queryKey: ["/api/companies/today"],
-  });
+const { data: blockCompanies = [], isLoading: isLoadingBlock } = useQuery<Company[]>({
+  queryKey: ["/api/companies/category/block"],
+  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+});
 
-  // Query for data requests
-  const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataRequest[]>({
-    queryKey: ["/api/data-requests"],
-    enabled: activeSection === "requestData",
-  });
+const { data: todayCompanies = [], isLoading: isLoadingTodayCompanies } = useQuery<Company[]>({
+  queryKey: ["/api/companies/today"],
+  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+});
 
+// 3. Only load this when the user is in requestData section (already correct)
+const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataRequest[]>({
+  queryKey: ["/api/data-requests"],
+  enabled: activeSection === "requestData",
+});
   // Mutations
   const createRequestMutation = useMutation({
     mutationFn: async (requestData: any) => {
