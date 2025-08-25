@@ -65,6 +65,7 @@ export function AdminCompanyForm() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = {
+      clientname: formData.get("clientname") as string,
       name: formData.get("name") as string,
       address: formData.get("address") as string,
       email: formData.get("email") as string,
@@ -105,6 +106,10 @@ export function AdminCompanyForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+            <Label htmlFor="clientname">Company Client Name</Label>
+            <Input id="clientname" name="clientname" required />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="name">Company Name</Label>
             <Input id="name" name="name" required />
