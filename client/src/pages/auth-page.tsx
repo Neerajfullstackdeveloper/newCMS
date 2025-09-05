@@ -143,7 +143,7 @@ export default function AuthPage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="register">
+            {/* <TabsContent value="register">
               <Card>
                 <CardHeader>
                   <CardTitle>Create Account</CardTitle>
@@ -283,7 +283,7 @@ export default function AuthPage() {
                   </form>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </TabsContent> */}
           </Tabs>
         </div>
       </div>
