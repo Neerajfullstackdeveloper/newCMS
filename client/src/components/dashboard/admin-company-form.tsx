@@ -107,7 +107,7 @@ export function AdminCompanyForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-            <Label htmlFor="clientname">Company Client Name</Label>
+            <Label htmlFor="clientname">Client Name</Label>
             <Input id="clientname" name="clientname" required />
           </div>
           <div className="space-y-2">
@@ -122,7 +122,7 @@ export function AdminCompanyForm() {
 
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" required />
+            <Input id="email" name="email" type="email" />
           </div>
 
           <div className="space-y-2">
@@ -130,7 +130,7 @@ export function AdminCompanyForm() {
             <Input id="phone" name="phone" required />
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="assign-to">Assign to User</Label>
             <Select onValueChange={setAssignedToUserId} value={assignedToUserId || ""}>
               <SelectTrigger id="assign-to">
@@ -148,7 +148,7 @@ export function AdminCompanyForm() {
                 )}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label>Products</Label>
