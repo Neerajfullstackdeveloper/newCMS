@@ -31,42 +31,13 @@ export default function Dashboard() {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentModalMode, setCommentModalMode] = useState<'add' | 'view'>('add');
   const [displayCount, setDisplayCount] = useState(12);
-
-  const [followUpCompanies, setFollowUpCompanies] = useState([]);
-  const [comments, setComments] = useState([]);
-
   const [requestData, setRequestData] = useState({
     requestType: "",
     industry: "",
     justification: ""
   });
 
-
-  useEffect(() => {
-    fetch("/api/companies")
-      .then(res => res.json())
-      .then(data => setFollowUpCompanies(data));
-
-    fetch("/api/comments")
-      .then(res => res.json())
-      .then(data => setComments(data));
-  }, []);
-
-  const companiesWithComments = followUpCompanies.map(company => {
-    const relatedComments = comments.filter(c => c.companyId === company.id);
-
-    // Sort comments by date DESC (latest first)
-    const latestComment = relatedComments.sort(
-      (a, b) => new Date(b.commentDate).getTime() - new Date(a.commentDate).getTime()
-    )[0];
-
-    return {
-      ...company,
-      commentDate: latestComment?.commentDate || null,
-    };
-  });
-
-  const queryClient = useQueryClient();
+const queryClient = useQueryClient();
 
   // Queries
   const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
@@ -795,36 +766,14 @@ export default function Dashboard() {
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
                             {company.createdAt ? format(new Date(company.createdAt), 'MMM d, yyyy') : 'N/A'}
+                            {console.log("Company:", company)}
+                            {console.log("Comment Date:", company.commentDate)}
                           </div>
-                          <div>
-                            <h2>Follow-Up Companies</h2>
-                            {isLoading ? (
-                              <p>Loading...</p>
-                            ) : companiesWithComments.length > 0 ? (
-                              companiesWithComments.map(company => (
-                                <div key={company.id}>
-                                  <h3>{company.name}</h3>
-                                  <p>Latest Comment Date: {company.commentDate ? format(new Date(company.commentDate), "MMM d, yyyy, h:mm a") : "N/A"}</p>
-                                </div>
-                              ))
-                            ) : (
-                              <p>No companies found.</p>
-                            )}
-                          </div>
-                          <div>
-                            <h2>Follow-Up Companies</h2>
-                            {isLoading ? (
-                              <p>Loading...</p>
-                            ) : companiesWithComments.length > 0 ? (
-                              companiesWithComments.map(company => (
-                                <div key={company.id}>
-                                  <h3>{company.name}</h3>
-                                  <p>Latest Comment Date: {company.commentDate ? format(new Date(company.commentDate), "MMM d, yyyy, h:mm a") : "N/A"}</p>
-                                </div>
-                              ))
-                            ) : (
-                              <p>No companies found.</p>
-                            )}
+                          <div className="flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {company.commentDate
+                              ? format(new Date(company.commentDate), "MMM d, yyyy, h:mm a")
+                              : "N/A"}
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
