@@ -49,6 +49,9 @@ export default function Dashboard() {
       fetch("/api/comments").then(res => res.json())
     ])
       .then(([companies, comments]) => {
+        console.log("Fetched companies:", companies);
+      console.log("Fetched comments:", comments);
+      
         setCompanyList(companies);
         setCommentList(comments);
         setLoadingData(false);
