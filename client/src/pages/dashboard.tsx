@@ -31,13 +31,49 @@ export default function Dashboard() {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentModalMode, setCommentModalMode] = useState<'add' | 'view'>('add');
   const [displayCount, setDisplayCount] = useState(12);
+
+  const [companyList, setCompanyList] = useState<Company[]>([]);
+  const [commentList, setCommentList] = useState<CommentType[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
+
   const [requestData, setRequestData] = useState({
     requestType: "",
     industry: "",
     justification: ""
   });
 
-const queryClient = useQueryClient();
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/companies").then(res => res.json()),
+      fetch("/api/comments").then(res => res.json())
+    ])
+      .then(([companies, comments]) => {
+        setCompanyList(companies);
+        setCommentList(comments);
+        setLoadingData(false);
+      })
+      .catch(err => {
+        console.error("Error fetching data:", err);
+        setLoadingData(false);
+      });
+  }, []);
+
+  const mergedCompanies = companyList.map(company => {
+    const relatedComments = commentList.filter(c => c.companyId === company.id);
+
+    // Sort comments by latest date
+    const latestComment = relatedComments.sort(
+      (a, b) => new Date(b.commentDate).getTime() - new Date(a.commentDate).getTime()
+    )[0];
+
+    return {
+      ...company,
+      latestCommentDate: latestComment?.commentDate || null,
+    };
+  });
+
+  const queryClient = useQueryClient();
 
   // Queries
   const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
@@ -769,12 +805,30 @@ const queryClient = useQueryClient();
                             {console.log("Company:", company)}
                             {console.log("Comment Date:", company.commentDate)}
                           </div>
-                          <div className="flex items-center">
-                            <Clock className="h-3 w-3 mr-1" />
-                            {company.commentDate
-                              ? format(new Date(company.commentDate), "MMM d, yyyy, h:mm a")
-                              : "N/A"}
+
+                          <div>
+                            <h2>Follow-Up Companies</h2>
+                            {loadingData ? (
+                              <p>Loading...</p>
+                            ) : mergedCompanies.length > 0 ? (
+                              mergedCompanies.map(company => (
+                                <div key={company.id}>
+                                  <h3>{company.name}</h3>
+                                  <p>
+                                    Latest Comment Date:{" "}
+                                    {company.latestCommentDate
+                                      ? format(new Date(company.latestCommentDate), "MMM d, yyyy, h:mm a")
+                                      : "N/A"}
+                                  </p>
+                                </div>
+                              ))
+                            ) : (
+                              <p>No companies found.</p>
+                            )}
                           </div>
+
+
+
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
                             {company.comment_date
