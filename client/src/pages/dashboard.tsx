@@ -769,12 +769,18 @@ export default function Dashboard() {
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
+                            {company.commentDate
+                              ? format(new Date(company.commentDate), "MMM d, yyyy, h:mm a")
+                              : "N/A"}
+                          </div>
+                          <div className="flex items-center">
+                            <Clock className="h-3 w-3 mr-1" />
                             {company.comment_date
                               ? format(new Date(company.comment_date.replace(" ", "T")), "MMM d, yyyy")
                               : company.commentDate
                                 ? format(new Date(company.commentDate.replace(" ", "T")), "MMM d, yyyy")
                                 : "N/A"}
-                                {console.log(company.comment_date, company.commentDate)}
+                            {console.log(company.comment_date, company.commentDate)}
                           </div>
                         </div>
 
