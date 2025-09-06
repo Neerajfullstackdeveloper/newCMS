@@ -770,9 +770,10 @@ export default function Dashboard() {
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
                             {company.comment_date
-                              ? format(new Date(company.commentDate.replace(" ", "T")), "MMM d, yyyy")
-                              : "N/A"}
-                              {console.log(company)}
+                              ? format(new Date(company.comment_date.replace(" ", "T")), "MMM d, yyyy")
+                              : company.commentDate
+                                ? format(new Date(company.commentDate.replace(" ", "T")), "MMM d, yyyy")
+                                : "N/A"}
                           </div>
                         </div>
 
@@ -1175,8 +1176,8 @@ export default function Dashboard() {
                                 )}
                               </div>
                               <span className={`px-3 py-1 text-xs rounded-full ${request.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                                  request.status === "approved" ? "bg-green-100 text-green-800" :
-                                    "bg-red-100 text-red-800"
+                                request.status === "approved" ? "bg-green-100 text-green-800" :
+                                  "bg-red-100 text-red-800"
                                 }`}>
                                 {request.status}
                               </span>
