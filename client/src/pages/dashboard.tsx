@@ -765,6 +765,7 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
                             {company.createdAt ? format(new Date(company.createdAt), 'MMM d, yyyy') : 'N/A'}
+                            {console.log(company.comment_date)}
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
