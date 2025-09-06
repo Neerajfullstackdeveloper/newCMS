@@ -51,7 +51,7 @@ export default function Dashboard() {
       .then(([companies, comments]) => {
         console.log("Fetched companies:", companies);
       console.log("Fetched comments:", comments);
-      
+
         setCompanyList(companies);
         setCommentList(comments);
         setLoadingData(false);
@@ -805,8 +805,7 @@ export default function Dashboard() {
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
                             {company.createdAt ? format(new Date(company.createdAt), 'MMM d, yyyy') : 'N/A'}
-                            {console.log("Company:", company)}
-                            {console.log("Comment Date:", company.commentDate)}
+                            
                           </div>
 
                           <div>
