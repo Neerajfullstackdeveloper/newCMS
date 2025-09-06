@@ -39,46 +39,46 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
 
   // Queries
- const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
-  queryKey: ["/api/companies"],
-});
+  const { data: allCompanies = [], isLoading: isLoadingAllCompanies } = useQuery<Company[]>({
+    queryKey: ["/api/companies"],
+  });
 
-const { data: myCompanies = [], isLoading: isLoadingMyCompanies } = useQuery<Company[]>({
-  queryKey: ["/api/companies/my"],
-  enabled: !isLoadingAllCompanies,
-});
+  const { data: myCompanies = [], isLoading: isLoadingMyCompanies } = useQuery<Company[]>({
+    queryKey: ["/api/companies/my"],
+    enabled: !isLoadingAllCompanies,
+  });
 
-const { data: holidays = [], isLoading: isLoadingHolidays } = useQuery<Holiday[]>({
-  queryKey: ["/api/holidays"],
-  enabled: !isLoadingAllCompanies,
-});
+  const { data: holidays = [], isLoading: isLoadingHolidays } = useQuery<Holiday[]>({
+    queryKey: ["/api/holidays"],
+    enabled: !isLoadingAllCompanies,
+  });
 
-// 2. Delay category-based queries until both above are loaded
-const { data: followUpCompanies = [], isLoading: isLoadingFollowUp } = useQuery<Company[]>({
-  queryKey: ["/api/companies/category/followup"],
-  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
-});
+  // 2. Delay category-based queries until both above are loaded
+  const { data: followUpCompanies = [], isLoading: isLoadingFollowUp } = useQuery<Company[]>({
+    queryKey: ["/api/companies/category/followup"],
+    enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+  });
 
-const { data: hotCompanies = [], isLoading: isLoadingHot } = useQuery<Company[]>({
-  queryKey: ["/api/companies/category/hot"],
-  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
-});
+  const { data: hotCompanies = [], isLoading: isLoadingHot } = useQuery<Company[]>({
+    queryKey: ["/api/companies/category/hot"],
+    enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+  });
 
-const { data: blockCompanies = [], isLoading: isLoadingBlock } = useQuery<Company[]>({
-  queryKey: ["/api/companies/category/block"],
-  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
-});
+  const { data: blockCompanies = [], isLoading: isLoadingBlock } = useQuery<Company[]>({
+    queryKey: ["/api/companies/category/block"],
+    enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+  });
 
-const { data: todayCompanies = [], isLoading: isLoadingTodayCompanies } = useQuery<Company[]>({
-  queryKey: ["/api/companies/today"],
-  enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
-});
+  const { data: todayCompanies = [], isLoading: isLoadingTodayCompanies } = useQuery<Company[]>({
+    queryKey: ["/api/companies/today"],
+    enabled: !isLoadingAllCompanies && !isLoadingMyCompanies,
+  });
 
-// 3. Only load this when the user is in requestData section (already correct)
-const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataRequest[]>({
-  queryKey: ["/api/data-requests"],
-  enabled: activeSection === "requestData",
-});
+  // 3. Only load this when the user is in requestData section (already correct)
+  const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataRequest[]>({
+    queryKey: ["/api/data-requests"],
+    enabled: activeSection === "requestData",
+  });
   // Mutations
   const createRequestMutation = useMutation({
     mutationFn: async (requestData: any) => {
@@ -88,13 +88,13 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
     onMutate: async (newRequest) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["/api/data-requests"] });
-      
+
       // Snapshot the previous value
       const previousRequests = queryClient.getQueryData<DataRequest[]>(["/api/data-requests"]);
-      
+
       // Optimistically update to the new value
       queryClient.setQueryData<DataRequest[]>(["/api/data-requests"], (old = []) => [...old, { ...newRequest, id: Date.now() }]);
-      
+
       return { previousRequests };
     },
     onError: (err, newRequest, context) => {
@@ -102,8 +102,8 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       if (context?.previousRequests) {
         queryClient.setQueryData(["/api/data-requests"], context.previousRequests);
       }
-      toast({ 
-        title: "Failed to create request", 
+      toast({
+        title: "Failed to create request",
         variant: "destructive",
         description: "Please try again later."
       });
@@ -111,7 +111,7 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
     onSuccess: (newRequest) => {
       queryClient.setQueryData<DataRequest[]>(["/api/data-requests"], (oldRequests = []) => [...oldRequests, newRequest]);
       queryClient.invalidateQueries({ queryKey: ["/api/data-requests"] });
-      toast({ 
+      toast({
         title: "Request created successfully",
         description: "Your request has been submitted for review."
       });
@@ -134,7 +134,7 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       await queryClient.cancelQueries({ queryKey: ["/api/companies/category/hot"] });
       await queryClient.cancelQueries({ queryKey: ["/api/companies/category/block"] });
       await queryClient.cancelQueries({ queryKey: ["/api/companies/category/general"] });
-      
+
       // Snapshot the previous values
       const previousCompanies = queryClient.getQueryData<Company[]>(["/api/companies"]);
       const previousMyCompanies = queryClient.getQueryData<Company[]>(["/api/companies/my"]);
@@ -143,11 +143,11 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       const previousHotCompanies = queryClient.getQueryData<Company[]>(["/api/companies/category/hot"]);
       const previousBlockCompanies = queryClient.getQueryData<Company[]>(["/api/companies/category/block"]);
       const previousGeneralCompanies = queryClient.getQueryData<Company[]>(["/api/companies/category/general"]);
-      
+
       // Optimistically update all company lists
-      const updateCompanyInList = (list: Company[] = []) => 
+      const updateCompanyInList = (list: Company[] = []) =>
         list.map(company => company.id === id ? { ...company, ...data } : company);
-      
+
       queryClient.setQueryData(["/api/companies"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/my"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/today"], updateCompanyInList);
@@ -155,8 +155,8 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       queryClient.setQueryData(["/api/companies/category/hot"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/category/block"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/category/general"], updateCompanyInList);
-      
-      return { 
+
+      return {
         previousCompanies,
         previousMyCompanies,
         previousTodayCompanies,
@@ -177,24 +177,24 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
         queryClient.setQueryData(["/api/companies/category/block"], context.previousBlockCompanies);
         queryClient.setQueryData(["/api/companies/category/general"], context.previousGeneralCompanies);
       }
-      toast({ 
-        title: "Failed to update company", 
+      toast({
+        title: "Failed to update company",
         variant: "destructive",
         description: "Please try again later."
       });
     },
     onSuccess: (updatedCompany) => {
       // Update all company lists with the new data
-      const updateCompanyInList = (list: Company[] = []) => 
+      const updateCompanyInList = (list: Company[] = []) =>
         list.map(company => company.id === updatedCompany.id ? updatedCompany : company);
-      
+
       queryClient.setQueryData(["/api/companies"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/my"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/today"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/category/followup"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/category/hot"], updateCompanyInList);
       queryClient.setQueryData(["/api/companies/category/block"], updateCompanyInList);
-      
+
       // Invalidate all company-related queries
       queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
       queryClient.invalidateQueries({ queryKey: ["/api/companies/my"] });
@@ -202,8 +202,8 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       queryClient.invalidateQueries({ queryKey: ["/api/companies/category/followup"] });
       queryClient.invalidateQueries({ queryKey: ["/api/companies/category/hot"] });
       queryClient.invalidateQueries({ queryKey: ["/api/companies/category/block"] });
-      
-      toast({ 
+
+      toast({
         title: "Company updated successfully",
         description: "The company information has been updated."
       });
@@ -218,10 +218,10 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
     onMutate: async ({ companyId, comment }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: [`/api/companies/${companyId}/comments`] });
-      
+
       // Snapshot the previous value
       const previousComments = queryClient.getQueryData<Comment[]>([`/api/companies/${companyId}/comments`]);
-      
+
       // Optimistically update to the new value
       const newComment = {
         id: Date.now(),
@@ -235,9 +235,9 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
           role: user?.role
         }
       };
-      
+
       queryClient.setQueryData<Comment[]>([`/api/companies/${companyId}/comments`], (old = []) => [...old, newComment as any]);
-      
+
       return { previousComments };
     },
     onError: (err, variables, context) => {
@@ -245,8 +245,8 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       if (context?.previousComments) {
         queryClient.setQueryData([`/api/companies/${variables.companyId}/comments`], context.previousComments);
       }
-      toast({ 
-        title: "Failed to add comment", 
+      toast({
+        title: "Failed to add comment",
         variant: "destructive",
         description: "Please try again later."
       });
@@ -254,7 +254,7 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
     onSuccess: (newComment) => {
       queryClient.setQueryData<Comment[]>([`/api/companies/${newComment.companyId}/comments`], (oldComments = []) => [...oldComments, newComment]);
       queryClient.invalidateQueries({ queryKey: [`/api/companies/${newComment.companyId}/comments`] });
-      toast({ 
+      toast({
         title: "Comment added successfully",
         description: "Your comment has been added to the company."
       });
@@ -281,10 +281,10 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to load initial data:", error);
-        toast({ 
-          title: "Error loading data", 
+        toast({
+          title: "Error loading data",
           description: "Please refresh the page to try again.",
-          variant: "destructive" 
+          variant: "destructive"
         });
       }
     };
@@ -316,7 +316,7 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
     setActiveSection(section);
     // Prefetch data for the new section
     const prefetchPromises = [];
-    
+
     switch (section) {
       case "requestData":
         prefetchPromises.push(queryClient.prefetchQuery({ queryKey: ["/api/data-requests"] }));
@@ -352,10 +352,10 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
       })
       .catch((error) => {
         console.error("Failed to prefetch data:", error);
-        toast({ 
-          title: "Error loading section data", 
+        toast({
+          title: "Error loading section data",
           description: "Please try again.",
-          variant: "destructive" 
+          variant: "destructive"
         });
         setIsLoading(false);
       });
@@ -764,12 +764,14 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
                         <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
                           <div className="flex items-center">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {company.createdAt ? format(new Date(company.comment_date), 'MMM d, yyyy') : 'N/A'}
-                            
+                            {company.createdAt ? format(new Date(company.createdAt), 'MMM d, yyyy') : 'N/A'}
+
                           </div>
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
-                            {company.updatedAt ? format(new Date(company.updatedAt), 'MMM d, yyyy') : 'N/A'}
+                            {company.comment_date
+                              ? format(new Date(company.comment_date.replace(" ", "T")), "MMM d, yyyy")
+                              : "N/A"}
                           </div>
                         </div>
 
@@ -1171,11 +1173,10 @@ const { data: dataRequests = [], isLoading: isLoadingRequests } = useQuery<DataR
                                   <p className="text-sm text-gray-500">Industry: {request.industry}</p>
                                 )}
                               </div>
-                              <span className={`px-3 py-1 text-xs rounded-full ${
-                                request.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                                request.status === "approved" ? "bg-green-100 text-green-800" :
-                                "bg-red-100 text-red-800"
-                              }`}>
+                              <span className={`px-3 py-1 text-xs rounded-full ${request.status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                                  request.status === "approved" ? "bg-green-100 text-green-800" :
+                                    "bg-red-100 text-red-800"
+                                }`}>
                                 {request.status}
                               </span>
                             </div>
