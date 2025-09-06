@@ -772,6 +772,7 @@ export default function Dashboard() {
                             {company.comment_date
                               ? format(new Date(company.commentDate.replace(" ", "T")), "MMM d, yyyy")
                               : "N/A"}
+                              {console.log(company)}
                           </div>
                         </div>
 
