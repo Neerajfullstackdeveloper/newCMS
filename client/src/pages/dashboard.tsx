@@ -770,7 +770,7 @@ export default function Dashboard() {
                           <div className="flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
                             {company.comment_date
-                              ? format(new Date(company.comment_date.replace(" ", "T")), "MMM d, yyyy")
+                              ? format(new Date(company.commentDate.replace(" ", "T")), "MMM d, yyyy")
                               : "N/A"}
                           </div>
                         </div>
