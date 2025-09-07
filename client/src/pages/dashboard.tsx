@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [displayCount, setDisplayCount] = useState(12);
 
   const [companyList, setCompanyList] = useState<Company[]>([]);
+  const [blockCompanies, setBlockCompanies] = useState<Company[]>([]); // ✅ add this
   const [commentList, setCommentList] = useState<CommentType[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
@@ -45,6 +46,7 @@ export default function Dashboard() {
   const handleDeleteCompany = (id) => {
   setBlockCompanies((prev) => prev.filter((c) => c.id !== id));
 };
+
 
 
   useEffect(() => {
