@@ -33,7 +33,6 @@ export default function Dashboard() {
   const [displayCount, setDisplayCount] = useState(12);
 
   const [companyList, setCompanyList] = useState<Company[]>([]);
-  const [blockCompanies, setBlockCompanies] = useState<Company[]>([]);
   const [commentList, setCommentList] = useState<CommentType[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
